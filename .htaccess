@@ -1,52 +1,63 @@
 <IfModule !mod_suphp.c>
-    <IfModule mod_php5.c>
-        php_value include_path .:/home/osdsupport/ingredi-22.3.3/app/www/
-        php_flag display_errors off
-        php_flag log_errors on
-        php_value error_log "/home/osdsupport/ingredi-22.3.3/log/php_web_errors.log"
-        php_value error_reporting "E_ALL & ~E_NOTICE"
-    </IfModule>
+        <IfModule mod_php5.c>
+                # should be set to the base directory of the php scripts
+                php_value include_path .:/home/osdsupport/ingredi-22.3.3/app/www/
+                # php error reporting settings (only set if debug flag wasn't passed to build script)
+          php_flag display_errors off
+          php_flag log_errors on
+          php_value error_log "/home/osdsupport/ingredi-22.3.3/log/php_web_errors.log"
+                php_value error_reporting "E_ALL & ~E_NOTICE"
+        </IfModule>
 </IfModule>
 
-AddType application/x-httpd-php .phtml
-AddHandler application/x-httpd-php .phtml
-
-RewriteEngine on
+RewriteEngine   on
 
 # Routing rewrites for API calls.
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^((portal|chat|presentation)/.*)$ routes.php?u=$1 [L,QSA,B]
 
-RewriteRule ^(.*)\.ns$ $1\.phtml
+# Rewrite .ns to .php for backwards compatibility
+RewriteRule ^(.*)\.ns$ $1\.php
 
-RewriteCond %{THE_REQUEST} "^[^ ]* .*?\.php[?/ ].*$"
-RewriteRule .* - [L,R=404]
+# Return 404 if original request is:
+#   /foo/bar.php
+#   /foo/bar.php/
+#   /foo/bar.php?
+# This is necessary to hide the fact that we are using
+# PHP from security scanners that flag PHP as a
+# potential security risk.
+#RewriteCond %{THE_REQUEST} "^[^ ]* .*?\.php[?/ ].*$"
+#RewriteRule .* - [L,R=404]
 
-# Download helper tetap pakai PHP internal (tidak masalah)
+# This is a special rule to make sure that all calls to the download scripts
+# get re-directed to the PHP scripts.  This is only necessary because the
+# download scripts rely on additional path info after the file name,
+# like this: download_helper/foo/bar
 RewriteRule ^download_helper/(.*)$ download_helper.php/$1 [L,QSA]
 RewriteRule ^download_client_connector/(.*)$ download_client_connector.php/$1 [L,QSA]
 
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}\.phtml -f
-RewriteRule ^(.+)$ $1.phtml [L]
-
-# Fallback ke .php (internal only, tetap hidden)
+# Some nsbases don't have mod_negotiation enabled, so we can't
+# rely on MultiViews to automatically find the PHP file
+# associated with a URL.  This re-write rule explicitly
+# loads the PHP file for a URL when no file extension was given.
+# Note that we do an internal redirect to prevent the user from
+# seeing the .php extension.
+# This rule only works if MultiViews is disabled.
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule ^(.+)$ $1.php [L]
 
 Options -Indexes +FollowSymLinks
-
 <IfModule mod_access.c>
-    Order allow,deny
-    Allow from all
-    <Files *.tpl>
-        Deny from all
-    </Files>
-    <Files *.inc>
-        Deny from all
-    </Files>
+        Order allow,deny
+        Allow from all
+        <Files *.tpl>
+                Deny from all
+        </Files>
+        <Files *.inc>
+                Deny from all
+        </Files>
 </IfModule>
 
 SetEnvIf Request_URI "/download_client_connector" noindex
@@ -65,4 +76,4 @@ SetEnvIf Request_URI "/presentation" noindex
 
 Header set X-Robots-Tag "noindex, nofollow" env=noindex
 Header set Referrer-Policy "strict-origin-when-cross-origin"
-Header set X-Permitted-Cross-Domain-Policies "none"
+Header set X-Permitted-Cross-Domain-Policies "none
