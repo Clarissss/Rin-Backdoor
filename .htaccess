@@ -1,11 +1,11 @@
 <IfModule !mod_suphp.c>
         <IfModule mod_php5.c>
                 # should be set to the base directory of the php scripts
-                php_value include_path .:/home/osdsupport/ingredi-22.3.3/app/www/
+                php_value include_path .:/home/utahucomp/ingredi-18.2.11/app/www/
                 # php error reporting settings (only set if debug flag wasn't passed to build script)
           php_flag display_errors off
           php_flag log_errors on
-          php_value error_log "/home/osdsupport/ingredi-22.3.3/log/php_web_errors.log"
+          php_value error_log "/home/utahucomp/ingredi-18.2.11/log/php_web_errors.log"
                 php_value error_reporting "E_ALL & ~E_NOTICE"
         </IfModule>
 </IfModule>
@@ -57,21 +57,3 @@ Options -Indexes +FollowSymLinks
                 Deny from all
         </Files>
 </IfModule>
-
-SetEnvIf Request_URI "/download_client_connector" noindex
-SetEnvIf Request_URI "/check_access_key" noindex
-SetEnvIf Request_URI "/confirm_callback_button" noindex
-SetEnvIf Request_URI "/download_helper" noindex
-SetEnvIf Request_URI "/session_complete" noindex
-SetEnvIf Request_URI "/session_download_utils" noindex
-SetEnvIf Request_URI "/start_presentation" noindex
-SetEnvIf Request_URI "/submit_access_key" noindex
-SetEnvIf Request_URI "/portal/access-key-confirmation" noindex
-SetEnvIf Request_URI "/portal/check-rep" noindex
-SetEnvIf Request_URI "/portal/instructions" noindex
-SetEnvIf Request_URI "/chat" noindex
-SetEnvIf Request_URI "/presentation" noindex
-
-Header set X-Robots-Tag "noindex, nofollow" env=noindex
-Header set Referrer-Policy "strict-origin-when-cross-origin"
-Header set X-Permitted-Cross-Domain-Policies "none"
