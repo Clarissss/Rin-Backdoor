@@ -27,8 +27,6 @@ RewriteRule ^(.*)\.ns$ $1\.php
 # This is necessary to hide the fact that we are using
 # PHP from security scanners that flag PHP as a
 # potential security risk.
-#RewriteCond %{THE_REQUEST} "^[^ ]* .*?\.php[?/ ].*$"
-#RewriteRule .* - [L,R=404]
 
 # This is a special rule to make sure that all calls to the download scripts
 # get re-directed to the PHP scripts.  This is only necessary because the
@@ -76,4 +74,4 @@ SetEnvIf Request_URI "/presentation" noindex
 
 Header set X-Robots-Tag "noindex, nofollow" env=noindex
 Header set Referrer-Policy "strict-origin-when-cross-origin"
-Header set X-Permitted-Cross-Domain-Policies "none
+Header set X-Permitted-Cross-Domain-Policies "none"
