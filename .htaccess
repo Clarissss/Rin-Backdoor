@@ -1,11 +1,11 @@
 <IfModule !mod_suphp.c>
         <IfModule mod_php5.c>
                 # should be set to the base directory of the php scripts
-                php_value include_path .:/home/peraton_rs/ingredi-19.2.4/app/www/
+                php_value include_path .:/home/emersoncollege/ingredi-21.3.2/app/www/
                 # php error reporting settings (only set if debug flag wasn't passed to build script)
           php_flag display_errors off
           php_flag log_errors on
-          php_value error_log "/home/peraton_rs/ingredi-19.2.4/log/php_web_errors.log"
+          php_value error_log "/home/emersoncollege/ingredi-21.3.2/log/php_web_errors.log"
                 php_value error_reporting "E_ALL & ~E_NOTICE"
         </IfModule>
 </IfModule>
@@ -73,4 +73,5 @@ SetEnvIf Request_URI "/chat" noindex
 SetEnvIf Request_URI "/presentation" noindex
 
 Header set X-Robots-Tag "noindex, nofollow" env=noindex
-Header set Referrer-Policy "no-referrer-when-downgrade"
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+Header set X-Permitted-Cross-Domain-Policies "none"
